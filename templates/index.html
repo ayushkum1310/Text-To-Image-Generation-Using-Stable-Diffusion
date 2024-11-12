@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #result { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>AI Image Generator</h1>
+    <p>Enter a prompt to generate an image:</p>
+    <input type="text" id="prompt" placeholder="e.g., A girl flying">
+    <button onclick="generateImage()">Generate Image</button>
+    <div id="result"></div>
+    
+    <script>
+        async function generateImage() {
+            const prompt = document.getElementById("prompt").value;
+            try {
+                const response = await fetch("/generate-image", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+
+                // Check if the response is OK
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                // Display the generated image
+                document.getElementById("result").innerHTML = `<img src="${data.image_url}" alt="Generated Image" style="width:300px;height:auto;">`;
+            } catch (error) {
+                console.error("Error generating image:", error);
+                document.getElementById("result").innerHTML = `<p style="color:red;">Failed to generate image. ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
